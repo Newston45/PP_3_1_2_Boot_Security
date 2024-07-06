@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+</head>
+<body>
+<h1>Admin panel</h1>
+<h2>Hello <span th:text="${adminName}"></span></h2>
+<a href="/user">
+    <button type="button">
+        My Profile
+    </button>
+</a>
+<a href="/admin/list-users">
+    <button type="button">
+        Manage users
+    </button>
+</a>
+<br>
+<a th:href="@{/logout}">
+    <button type="button">
+        Logout
+    </button>
+</a>
+</body>
+</html>
