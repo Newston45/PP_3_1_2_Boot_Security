@@ -12,8 +12,8 @@
     <tr>
         <th>ID</th>
         <th>Username</th>
-        <th>Name</th>
-        <th>Surname</th>
+        <th>First name</th>
+        <th>Last name</th>
         <th>Email</th>
         <th>Phone</th>
         <th>Roles</th>
@@ -22,8 +22,8 @@
     <tr th:each="user : ${users}">
         <td th:text="${user.id}"></td>
         <td th:text="${user.username}"></td>
-        <td th:text="${user.name}"></td>
-        <td th:text="${user.surname}"></td>
+        <td th:text="${user.firstName}"></td>
+        <td th:text="${user.lastName}"></td>
         <td th:text="${user.email}"></td>
         <td th:text="${user.phone}"></td>
         <td>
@@ -56,10 +56,10 @@
     <input type="password" id="password" th:field="*{password}" required placeholder="Enter Password"/>
     <br>
     <lable for="name">Name:</lable>
-    <input type="text" id="name" th:field="*{name}" />
+    <input type="text" id="name" th:field="*{firstName}" />
     <br>
     <lable for="surname">Surname:</lable>
-    <input type="text" id="surname" th:field="*{surname}" />
+    <input type="text" id="surname" th:field="*{lastName}" />
     <br>
     <lable for="email">*Email:</lable>
     <input type="email" id="email" th:field="*{email}" required placeholder="Enter Email"/>

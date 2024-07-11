@@ -4,12 +4,12 @@
     <title>Spring Security Example</title>
 </head>
 <body>
-<h1><span th:text="|${user.name}, welcome spring boot security page!|"></span></h1>
+<h1><span th:text="|${user.firstName}, welcome spring boot security page!|"></span></h1>
 <h2>Profile:</h2>
 <p th:text="|ID: ${user.id}|"></p>
 <p th:text="|Username: ${user.username}|"></p>
-<p th:text="|Name: ${user.name}|"></p>
-<p th:text="|Surname: ${user.surname}|"></p>
+<p th:text="|Name: ${user.firstName}|"></p>
+<p th:text="|Surname: ${user.lastName}|"></p>
 <p th:text="|Email: ${user.email}|"></p>
 <p th:text="|Phone number: ${user.phone}|"></p>
 

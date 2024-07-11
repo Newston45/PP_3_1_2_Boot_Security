@@ -22,7 +22,7 @@ public class AdminController {
 
     @RequestMapping
     public String hello(Model model, Principal principal) {
-        model.addAttribute("adminName", userService.getUserByUsername(principal.getName()).getName());
+        model.addAttribute("adminName", userService.getUserByUsername(principal.getName()).getFirstName());
         return "admin";
     }
 
