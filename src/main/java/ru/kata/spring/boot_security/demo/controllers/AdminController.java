@@ -1,6 +1,9 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +40,18 @@ public class AdminController {
     }
 
     @GetMapping("/remove")
-    public String removeUser(@RequestParam("id") Long id) {
-        userService.deleteUser(userService.findById(id));
+    public String removeUser(@RequestParam("id") Long id, Authentication authentication) {
+        UserDetails currentUser = (UserDetails) authentication.getPrincipal();
+        String currentUsername = currentUser.getUsername();
+
+        User userToRemove = userService.findById(id);
+        userService.deleteUser(userToRemove);
+
+        if (userToRemove.getUsername().equals(currentUsername)) {
+            SecurityContextHolder.clearContext();
+            return "redirect:/login";
+        }
+
         return "redirect:/admin";
     }
 
