@@ -34,4 +34,16 @@ public class Role implements GrantedAuthority {
     public int hashCode() {
         return Objects.hash(id, name);
     }
+
+    @Override
+    public String toString() {
+        return removeRolePrefix(name);
+    }
+
+    private String removeRolePrefix(String roleName) {
+        if (roleName.startsWith("ROLE_")) {
+            return roleName.substring(5);
+        }
+        return roleName;
+    }
 }
