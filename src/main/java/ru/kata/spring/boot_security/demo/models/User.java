@@ -1,5 +1,9 @@
 package ru.kata.spring.boot_security.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -12,6 +16,7 @@ import javax.validation.constraints.NotEmpty;
 import java.util.Collection;
 import java.util.Objects;
 
+@JsonIgnoreProperties({"authorities", "enabled", "accountNonLocked", "credentialsNonExpired", "accountNonExpired"})
 @Entity
 @Data
 @Table(name = "users")
@@ -26,6 +31,7 @@ public class User implements UserDetails {
 
     @Column(name = "password", nullable = false)
     @NotEmpty(message = "Password is required")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Column(name = "email",nullable = false, unique = true)
@@ -103,8 +109,8 @@ public class User implements UserDetails {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
-                ", name='" + firstName + '\'' +
-                ", surname='" + lastName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", phone='" + phone + '\'' +
                 ", roles=" + roles +
                 '}';

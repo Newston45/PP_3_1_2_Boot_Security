@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+>
 <head>
     <meta charset="UTF-8">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -14,11 +14,11 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <div class="navbar-brand">
-            <span class="navbar-text" th:text="|${admin.email} |"></span>
+            <span id="admin-email" class="navbar-text"></span>
             <span class="navbar-text">with roles:</span>
-            <span class="navbar-text" th:each="role : ${admin.roles}" th:text="| ${role.toString()}|"></span>
+            <span id="admin-roles" class="navbar-text"></span>
         </div>
-        <a class="btn btn-dark ms-auto" th:href="@{/logout}" role="button">Logout</a>
+        <a class="btn btn-dark ms-auto" href="/logout" role="button">Logout</a>
     </div>
 </nav>
 
@@ -29,13 +29,7 @@
         <!--Sidebar-->
         <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar">
             <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item" th:each="role : ${admin.roles}">
-                        <a class="nav-link" th:text="${role.toString()}"
-                           th:href="@{|/${role.toString().toLowerCase()}|}">
-                        </a>
-                    </li>
-                </ul>
+                <ul id="role-sidebar-links" class="nav flex-column"></ul>
             </div>
         </nav>
 
@@ -82,26 +76,7 @@
                                     <th>Delete</th>
                                 </tr>
                                 </thead>
-                                <tbody class="align-middle">
-                                <tr th:each="user : ${users}">
-                                    <td th:text="${user.id}"></td>
-                                    <td th:text="${user.username}"></td>
-                                    <td th:text="${user.firstName}"></td>
-                                    <td th:text="${user.lastName}"></td>
-                                    <td th:text="${user.email}"></td>
-                                    <td th:text="${user.phone}"></td>
-                                    <td>
-                                        <ul>
-                                            <li th:each="role : ${user.roles}" th:text="${role.name}"></li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-info">Edit</button>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-danger">Remove</button>
-                                    </td>
-                                </tr>
+                                <tbody id="users-table-body" class="align-middle">
                                 </tbody>
                             </table>
                         </div>
@@ -113,45 +88,40 @@
                         </div>
                         <div class="row justify-content-center">
                             <div class="col-4">
-                                <form th:action="@{/admin/add}" th:object="${user}" method="post" class="p-3">
+                                <form id="user-create-form" class="p-3">
                                     <div class="mb-3">
                                         <label for="username" class="form-label">Username</label>
-                                        <input type="text" class="form-control" id="username" th:field="*{username}"
-                                               placeholder="Username">
+                                        <input type="text" class="form-control" id="username" name="username"
+                                               placeholder="Username" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="firstName" class="form-label">First name</label>
-                                        <input type="text" class="form-control" id="firstName" th:field="*{firstName}"
+                                        <input type="text" class="form-control" id="firstName" name="firstName"
                                                placeholder="First name">
                                     </div>
                                     <div class="mb-3">
                                         <label for="lastName" class="form-label">Last name</label>
-                                        <input type="text" class="form-control" id="lastName" th:field="*{lastName}"
+                                        <input type="text" class="form-control" id="lastName" name="lastName"
                                                placeholder="Last name">
                                     </div>
                                     <div class="mb-3">
                                         <label for="phone" class="form-label">Phone</label>
-                                        <input type="text" class="form-control" id="phone" th:field="*{phone}"
-                                               placeholder="Phone">
+                                        <input type="text" class="form-control" id="phone" name="phone"
+                                               placeholder="Phone" pattern="\d*">
                                     </div>
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" th:field="*{email}"
-                                               placeholder="Email">
+                                        <input type="email" class="form-control" id="email" name="email"
+                                               placeholder="Email" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="password" class="form-label">Password</label>
-                                        <input type="password" class="form-control" id="password" th:field="*{password}"
-                                               placeholder="Password">
+                                        <input type="password" class="form-control" id="password" name="password"
+                                               placeholder="Password" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="roles" class="form-label">Roles</label>
-                                        <select class="form-select" id="roles" multiple aria-label="multiply select"
-                                                th:field="*{roles}">
-                                            <option th:each="role : ${roles}"
-                                                    th:text="${role.name}"
-                                                    th:value="${role.id}">role
-                                            </option>
+                                        <select class="form-select" id="roles" name="roles" multiple aria-label="multiply select">
                                         </select>
                                     </div>
                                     <div class="mb-3">
@@ -176,41 +146,37 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="editUserForm" th:action="@{/admin/add}" th:object="${user}" method="post">
-                    <input type="hidden" id="editUserId" name="id" th:field="*{id}">
-                    <input type="hidden" id="editPassword" name="password" th:field="*{password}">
+                <form id="editUserForm">
+                    <input type="hidden" id="editUserId" name="id">
+                    <input type="hidden" id="editPassword" name="password">
                     <div class="mb-3">
                         <label for="editUsername" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="editUsername" name="username" th:field="*{username}">
+                        <input type="text" class="form-control" id="editUsername" name="username" required>
                     </div>
                     <div class="mb-3">
                         <label for="editFirstName" class="form-label">First name</label>
-                        <input type="text" class="form-control" id="editFirstName" name="firstName" th:field="*{firstName}">
+                        <input type="text" class="form-control" id="editFirstName" name="firstName">
                     </div>
                     <div class="mb-3">
                         <label for="editLastName" class="form-label">Last name</label>
-                        <input type="text" class="form-control" id="editLastName" name="lastName" th:field="*{lastName}">
+                        <input type="text" class="form-control" id="editLastName" name="lastName">
                     </div>
                     <div class="mb-3">
                         <label for="editPhone" class="form-label">Phone</label>
-                        <input type="text" class="form-control" id="editPhone" name="phone" th:field="*{phone}">
+                        <input type="text" class="form-control" id="editPhone" name="phone" pattern="\d*">
                     </div>
                     <div class="mb-3">
                         <label for="editEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="editEmail" name="email" th:field="*{email}">
+                        <input type="email" class="form-control" id="editEmail" name="email" required>
                     </div>
                     <div class="mb-3">
                         <label for="editRoles" class="form-label">Roles</label>
-                        <select class="form-select" id="editRoles" name="roles" multiple th:field="*{roles}">
-                            <option th:each="role : ${roles}"
-                                    th:text="${role.name}"
-                                    th:value="${role.id}">role
-                            </option>
+                        <select class="form-select" id="editRoles" name="roles" multiple aria-label="multiply select">
                         </select>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
-                        <button type="submit" class="btn btn-primary" id="confirmEditUserButton" >Edit</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="confirmEditUserButton">Edit</button>
                     </div>
                 </form>
             </div>
@@ -227,8 +193,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="removeUserForm" th:action="@{/admin/remove}" th:object="${user}" method="get">
-                    <input type="hidden" id="removeUserId" name="id" th:field="*{id}">
+                <form id="removeUserForm">
+                    <input type="hidden" id="removeUserId" name="id">
                     <div class="mb-3">
                         <label for="removeUsername" class="form-label">Username</label>
                         <input type="text" class="form-control" id="removeUsername" name="username" disabled>
@@ -265,56 +231,469 @@
     </div>
 </div>
 
+
 <script>
-    // Edit button click handler
-    document.querySelectorAll('.btn-info').forEach(button => {
-        button.addEventListener('click', function () {
-            const row = this.closest('tr');
-            document.getElementById('editUserId').value = row.querySelector('td:nth-child(1)').innerText;
-            document.getElementById('editUsername').value = row.querySelector('td:nth-child(2)').innerText;
-            document.getElementById('editFirstName').value = row.querySelector('td:nth-child(3)').innerText;
-            document.getElementById('editLastName').value = row.querySelector('td:nth-child(4)').innerText;
-            document.getElementById('editEmail').value = row.querySelector('td:nth-child(5)').innerText;
-            document.getElementById('editPhone').value = row.querySelector('td:nth-child(6)').innerText;
+    const state = {
+        users: [],
+        roles: [],
+        currentUser: null
+    };
 
-            // Set roles
-            const roles = Array.from(row.querySelectorAll('td:nth-child(7) li')).map(li => li.innerText);
-            document.querySelectorAll('#editRoles option').forEach(option => {
-                option.selected = roles.includes(option.innerText);
-            });
+    document.addEventListener('DOMContentLoaded', () => {
+        // Загрузка данных
+        loadAdminDetails();
+        loadUsersTable();
+        // loadUsers();
+        loadRoles();
 
-            new bootstrap.Modal(document.getElementById('editUserModal')).show();
+        // Обработчик отправки формы для создания пользователя
+
+        document.getElementById("user-create-form").addEventListener('submit', createUser);
+        // Переменные для модального окна и формы удаления
+        window.removeUserModal = new bootstrap.Modal(document.getElementById('removeUserModal'));
+        window.removeUserForm = document.getElementById('removeUserForm');
+        window.editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+        document.getElementById('editUserForm').addEventListener('submit', editUser);
+
+        // Обработчик отправки формы удаления
+        removeUserForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const userId = document.getElementById('removeUserId').value;
+            await deleteUser(userId);
         });
+
+        // editUserForm.addEventListener('submit', async function (event) {
+        //     event.preventDefault();
+        //     // const userId = document.getElementById('editUserId').value;
+        //     await editUser;
+        // });
+
+
     });
 
-    // Remove button click handler
-    document.querySelectorAll('.btn-danger').forEach(button => {
-        button.addEventListener('click', function () {
-            const row = this.closest('tr');
-            document.getElementById('removeUserId').value = row.querySelector('td:nth-child(1)').innerText;
-            document.getElementById('removeUsername').value = row.querySelector('td:nth-child(2)').innerText;
-            document.getElementById('removeFirstName').value = row.querySelector('td:nth-child(3)').innerText;
-            document.getElementById('removeLastName').value = row.querySelector('td:nth-child(4)').innerText;
-            document.getElementById('removeEmail').value = row.querySelector('td:nth-child(5)').innerText;
-            document.getElementById('removePhone').value = row.querySelector('td:nth-child(6)').innerText;
+    async function loadRoles() {
+        try {
+            const response = await fetch('/api/roles');
+            if (response.ok) {
+                state.roles = await response.json();
+                await renderRolesOptions();
+            } else {
+                console.error('Ошибка загрузки ролей.');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    }
 
-            // Clear the existing roles list
-            const rolesList = document.getElementById('removeRoles');
-            rolesList.innerHTML = '';
+    async function renderRolesOptions() {
+        const rolesSelect = document.getElementById('roles');
+        rolesSelect.innerHTML = '';
+        state.roles.forEach(role => {
+            const option = document.createElement('option');
+            option.value = role.id;
+            option.innerText = role.name;
+            rolesSelect.appendChild(option);
+        });
 
-            // Set roles
-            const roles = Array.from(row.querySelectorAll('td:nth-child(7) li')).map(li => li.innerText);
-            roles.forEach(role => {
-                const li = document.createElement('li');
-                li.innerText = role;
-                rolesList.appendChild(li);
+        const editRolesSelect = document.getElementById('editRoles');
+        editRolesSelect.innerHTML = rolesSelect.innerHTML;
+    }
+
+    async function loadAdminDetails() {
+        try {
+            const response = await fetch('/api/user');
+            if (response.ok) {
+                const admin = await response.json();
+                state.currentUser = admin;
+                console.log(state.currentUser);
+                const sidebarLinks = document.getElementById("role-sidebar-links");
+                const adminRoles = admin.roles;
+                document.getElementById('admin-email').innerText = admin.email;
+                document.getElementById('admin-roles').innerText = admin.roles.map(role => role.name).join(' ');
+                adminRoles.forEach(role => {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('nav-item');
+                    const link = document.createElement('a');
+                    link.classList.add('nav-link');
+                    link.href = `${role.name.toLowerCase()}`;
+                    link.innerText = role.name.charAt(0) + role.name.slice(1).toLowerCase();
+                    listItem.appendChild(link);
+                    sidebarLinks.appendChild(listItem);
+                });
+            } else {
+                console.error('Ошибка загрузки данных администратора.');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    }
+
+    async function loadUsersTable() {
+        try {
+            const response = await fetch('/api/users');
+            if (response.ok) {
+                const users = await response.json();
+                const usersTableBody = document.getElementById('users-table-body');
+                usersTableBody.innerHTML = '';
+
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+            <td>${user.id}</td>
+            <td>${user.username}</td>
+            <td>${user.firstName}</td>
+            <td>${user.lastName}</td>
+            <td>${user.email}</td>
+            <td>${user.phone}</td>
+            <td>${user.roles.map(role => role.name).join(' ')}</td>
+            <td><button class="btn btn-info btn-sm" id="edit" data-id="${user.id}" onclick="openEditUserModal(${user.id})">Edit</button></td>
+            <td><button class="btn btn-danger btn-sm" id="delete" data-id="${user.id}" onclick="openRemoveUserModal(${user.id})">Delete</button></td>
+        `;
+
+                    usersTableBody.appendChild(row);
+
+                });
+
+            } else {
+                console.error('Ошибка загрузки пользователей.');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    }
+
+    async function createUser(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+
+        const roleIds = Array.from(formData.getAll('roles'));
+
+        async function findRoleById(id) {
+            const response = await fetch(`/api/roles/${id}`);
+            if (response.ok) {
+                return await response.json();
+            } else {
+                throw new Error(`Не удалось получить роль с ID: ${id}`);
+            }
+        }
+
+        const roles = await Promise.all(roleIds.map(async (id) => {
+            const role = await findRoleById(id);
+            return {
+                id: role.id,
+                name: role.name,
+                authority: role.authority
+            };
+        }));
+
+        const user = {
+            username: formData.get('username'),
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
+            phone: formData.get('phone'),
+            email: formData.get('email'),
+            password: formData.get('password'),
+            roles: roles
+        };
+        console.log(user);
+        try {
+            const response = await fetch('/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
             });
 
-            new bootstrap.Modal(document.getElementById('removeUserModal')).show();
-        });
-    });
+            if (response.ok) {
+                // Переключение на вкладку с пользователями
+                const usersTab = new bootstrap.Tab(document.querySelector('#users-tab'));
+                usersTab.show();
+
+                // Перезагрузка таблицы пользователей
+                await loadUsersTable();
+            } else if (response.status === 409) {
+                alert('Username уже существует.');
+            } else {
+                console.error('Ошибка добавления пользователя.');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    }
+
+    async function openRemoveUserModal(userId) {
+        try {
+            const response = await fetch(`/api/users/${userId}`);
+            if (response.ok) {
+                const user = await response.json();
+                document.getElementById('removeUserId').value = user.id;
+                document.getElementById('removeUsername').value = user.username;
+                document.getElementById('removeFirstName').value = user.firstName;
+                document.getElementById('removeLastName').value = user.lastName;
+                document.getElementById('removePhone').value = user.phone;
+                document.getElementById('removeEmail').value = user.email;
+
+                const rolesList = document.getElementById('removeRoles');
+                rolesList.innerHTML = '';
+                user.roles.forEach(role => {
+                    const li = document.createElement('li');
+                    li.textContent = role.name;
+                    rolesList.appendChild(li);
+                });
+
+                removeUserModal.show();
+            } else {
+                console.error('Ошибка загрузки данных пользователя.');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    }
+
+
+    async function deleteUser(userId) {
+        const currentUser = state.currentUser;
+        try {
+            const response = await fetch(`/api/users/${userId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+
+                console.log(currentUser.id);
+                console.log(userId);
+                // if (currentUser.id == userId) {
+                //     logout();
+                // }
+                await loadUsersTable();
+                removeUserModal.hide()
+            } else {
+                console.error('Ошибка удаления пользователя.');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    }
+
+    // function logout() {
+    //     window.location.href = '/logout';
+    //     state.currentUser = null;
+    // }
+
+    async function openEditUserModal(userId) {
+        try {
+            const response = await fetch(`/api/users/${userId}`);
+            if (response.ok) {
+                const user = await response.json();
+                document.getElementById('editUserId').value = user.id;
+                document.getElementById('editUsername').value = user.username;
+                document.getElementById('editFirstName').value = user.firstName;
+                document.getElementById('editLastName').value = user.lastName;
+                document.getElementById('editPhone').value = user.phone;
+                document.getElementById('editEmail').value = user.email;
+
+                const rolesList = document.getElementById('editRoles');
+                rolesList.innerHTML = '';
+                state.roles.forEach(role => {
+                    const option = document.createElement('option');
+                    option.value = role.id;
+                    option.innerText = role.name;
+                    rolesList.appendChild(option);
+                });
+
+                editUserModal.show();
+            } else {
+                console.error('Ошибка загрузки данных пользователя.');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    }
+
+    async function editUser(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+
+        const roleIds = Array.from(formData.getAll('roles'));
+
+        async function findRoleById(id) {
+            const response = await fetch(`/api/roles/${id}`);
+            if (response.ok) {
+                return await response.json();
+            } else {
+                throw new Error(`Не удалось получить роль с ID: ${id}`);
+            }
+        }
+
+        const roles = await Promise.all(roleIds.map(async (id) => {
+            const role = await findRoleById(id);
+            return {
+                id: role.id,
+                name: role.name,
+                authority: role.authority
+            };
+        }));
+
+        const user = {
+            id: formData.get('id'),
+            username: formData.get('username'),
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
+            phone: formData.get('phone'),
+            email: formData.get('email'),
+            password: formData.get('password'),
+            roles: roles
+        };
+        console.log(user);
+
+        try {
+            const response = await fetch('/api/users', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            });
+
+            if (response.ok) {
+                // Переключение на вкладку с пользователями
+                editUserModal.hide();
+                // Перезагрузка таблицы пользователей
+                await loadUsersTable();
+            } else {
+                console.error('Ошибка изменения пользователя.');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+        // try {
+        //     const response = await fetch('/api/users', {
+        //         method: 'PUT'
+        //     });
+        //     if (response.ok) {
+        //         await loadUsersTable();
+        //         editUserModal.hide()
+        //     } else {
+        //         console.error('Ошибка изменения пользователя.');
+        //     }
+        // } catch (error) {
+        //     console.error('Ошибка:', error);
+        // }
+    }
+
 </script>
 
+<!--<script>-->
+<!--    // Управление состоянием-->
+<!--    const state = {-->
+<!--        users: [],-->
+<!--        roles: [],-->
+<!--        currentUser: null-->
+<!--    };-->
+
+<!--    document.addEventListener('DOMContentLoaded', () => {-->
+<!--        // Загрузка данных-->
+<!--        loadAdminDetails();-->
+<!--        loadUsers();-->
+<!--        loadRoles();-->
+
+<!--        // Обработчик отправки формы для создания пользователя-->
+<!--        document.getElementById('user-form').addEventListener('submit', createUser);-->
+
+<!--        // Обработчик формы редактирования пользователя-->
+<!--        document.getElementById('editUserForm').addEventListener('submit', updateUser);-->
+<!--    });-->
+
+<!--    // Загрузка информации об администраторе-->
+
+
+<!--    // Загрузка ссылок, специфичных для ролей-->
+<!--    function loadRoleSpecificLinks(roles) {-->
+<!--        const sidebarLinks = document.getElementById('role-sidebar-links');-->
+<!--        roles.forEach(role => {-->
+<!--            const listItem = document.createElement('li');-->
+<!--            listItem.classList.add('nav-item');-->
+<!--            const link = document.createElement('a');-->
+<!--            link.classList.add('nav-link');-->
+<!--            link.href = `${role.name.toLowerCase()}`;-->
+<!--            link.innerText = role.name.charAt(0) + role.name.slice(1).toLowerCase();-->
+<!--            listItem.appendChild(link);-->
+<!--            sidebarLinks.appendChild(listItem);-->
+<!--        });-->
+<!--    }-->
+
+<!--    // Загрузка пользователей-->
+<!--    async function loadUsers() {-->
+<!--        try {-->
+<!--            const response = await fetch('/api/users');-->
+<!--            if (response.ok) {-->
+<!--                state.users = await response.json();-->
+<!--                renderUsersTable();-->
+<!--            } else {-->
+<!--                console.error('Ошибка загрузки пользователей.');-->
+<!--            }-->
+<!--        } catch (error) {-->
+<!--            console.error('Ошибка:', error);-->
+<!--        }-->
+<!--    }-->
+
+<!--    // Загрузка ролей-->
+<!--    async function loadRoles() {-->
+<!--        try {-->
+<!--            const response = await fetch('/api/roles');-->
+<!--            if (response.ok) {-->
+<!--                state.roles = await response.json();-->
+<!--                renderRolesOptions();-->
+<!--            } else {-->
+<!--                console.error('Ошибка загрузки ролей.');-->
+<!--            }-->
+<!--        } catch (error) {-->
+<!--            console.error('Ошибка:', error);-->
+<!--        }-->
+<!--    }-->
+
+<!--// Отображение таблицы пользователей-->
+<!--function renderUsersTable() {-->
+<!--const usersTableBody = document.getElementById('users-table-body');-->
+<!--usersTableBody.innerHTML = '';-->
+
+<!--state.users.forEach(user => {-->
+<!--const row = document.createElement('tr');-->
+<!--row.innerHTML = `-->
+<!--<td>${user.id}</td>-->
+<!--<td>${user.username}</td>-->
+<!--<td>${user.firstName}</td>-->
+<!--<td>${user.lastName}</td>-->
+<!--<td>${user.email}</td>-->
+<!--<td>${user.phone}</td>-->
+<!--<td>${user.roles.map(role => role.name).join(', ')}</td>-->
+<!--<td>-->
+<!--    <button class="btn btn-info btn-sm" onclick="editUser(${user.id})">Редактировать</button>-->
+<!--</td>-->
+<!--<td>-->
+<!--    <button class="btn btn-danger btn-sm" onclick="deleteUser(${user.id})">Удалить</button>-->
+<!--</td>-->
+<!--`;-->
+<!--usersTableBody.appendChild(row);-->
+<!--});-->
+<!--}-->
+
+<!--    // Отображение опций ролей-->
+<!--    function renderRolesOptions() {-->
+<!--        const rolesSelect = document.getElementById('roles');-->
+<!--        rolesSelect.innerHTML = '';-->
+<!--        state.roles.forEach(role => {-->
+<!--            const option = document.createElement('option');-->
+<!--            option.value = role.id;-->
+<!--            option.innerText = role.name;-->
+<!--            rolesSelect.appendChild(option);-->
+<!--        });-->
+
+<!--        const editRolesSelect = document.getElementById('editRoles');-->
+<!--        editRolesSelect.innerHTML = rolesSelect.innerHTML;-->
+<!--    }-->
+
+<!--</script>-->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

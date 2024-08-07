@@ -12,6 +12,7 @@ import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -29,8 +30,23 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void saveUser(User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+
+        if (user.getId() != null) {
+
+            if (userRepository.existsById(user.getId())) {
+                User userFromDB = userRepository.findById(user.getId()).orElseThrow(() -> new RuntimeException("User not found"));
+                user.setPassword(userFromDB.getPassword());
+                userRepository.save(user);
+            } else {
+                throw new RuntimeException("User with id " + user.getId() + " does not exist.");
+            }
+        } else {
+            if (userRepository.findUserByUsername(user.getUsername()).isPresent()) {
+                throw new RuntimeException("Username " + user.getUsername() + " already exists.");
+            }
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+        }
     }
 
     @Override
@@ -41,8 +57,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public User findById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public User findById(Long id) throws NoSuchElementException {
+        return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
 
@@ -62,6 +78,11 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public List<Role> getRoles() {
         return roleRepository.findAll();
+    }
+
+    @Override
+    public Role findRoleById(Long id) {
+        return roleRepository.findById(id).orElseThrow(() -> new RuntimeException("Role not found"));
     }
 
     @Override
